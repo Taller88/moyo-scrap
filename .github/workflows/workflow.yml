@@ -10,7 +10,10 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
+      - run: pwd
+      - run: ls
       - run: cd hello-world 
+      - run: ls 
       - run: pwd
       - run: npm install && cd ..
       - uses: aws-actions/setup-sam@v2
