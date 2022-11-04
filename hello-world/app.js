@@ -19,9 +19,10 @@ exports.lambdaHandler = async (event, context) => {
     try {
         // const ret = await axios(url);
 
-        const urlEncodedName = encodeURIComponent("정진우")
-        const userPhone = "01082271995";
-        const userSsn = "9306161268217";
+
+        const urlEncodedName = encodeURIComponent(event.userName);
+        const userPhone = event.userPhone;
+        const userSsn = event.userSsn;
 
         const scrapResult = await msafeModuel.prototype.간편로그인(urlEncodedName, userPhone, userSsn);
 
