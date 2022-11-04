@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "moyo-scrap"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-13fht86wz01kb"
+s3_prefix = "moyo-scrap"
+region = "ap-northeast-2"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
