@@ -15,7 +15,8 @@ jobs:
       - run: cd hello-world 
       - run: ls 
       - run: pwd
-      - run: npm install && cd ..
+      - run: npm install 
+      - run: cd ..
       - uses: aws-actions/setup-sam@v2
       - uses: aws-actions/configure-aws-credentials@v1
         with:
