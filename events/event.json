@@ -1,4 +1,8 @@
 {
+  "id":"1995",
+  "userName":"정진우",
+  "userPhone":"01082271995",
+  "userSsn":"9306161234567",
   "body": "{\"message\": \"hello world\"}",
   "resource": "/{proxy+}",
   "path": "/path/to/resource",

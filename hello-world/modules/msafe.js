@@ -16,13 +16,17 @@ function MSafe() {
  * @param {*} userName  : url 인코딩된 사용자이름
  * @param {*} userPhone : 사용자이름
  * @param {*} ssn       : 주민등록번호(full)
+ * 
+ * @return {*} status : 스크래핑 결과 status
+ * @return {*} data : 스크래핑 결과 data
+ * 
  */
 MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
 
     const ssn1 = ssn.substring(0, 6);
     const ssn2 = ssn.substring(6, 13);
 
-    console.log("[module]msafe easy login");
+    console.log("[module]msafe easy login init");
 
     this.host = "https://msafer.or.kr"
 
@@ -45,6 +49,7 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
     this.header['Accept-Encoding'] = 'gzip, deflate, br'
     this.header['Accept-Language'] = 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7'
 
+    console.log("Go to loginForm page")
     var result = await axios({
         method: 'GET',
         url: this.host + '/member/loginform.do',
@@ -52,9 +57,6 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
     })
 
 
-    console.log("*****************************************")
-    console.log(result);
-    console.log("*****************************************")
     this.cookies = cookieParser(result);
     console.log("MSafe modules: cookies: " + this.cookies);
 
@@ -81,6 +83,7 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
     console.log("testCookie: " + this.cookies);
     this.postData = "pName=%EC%A0%95%EC%A7%84%EC%9A%B0&pSsn=930616&pSsn2=1268217&pPhone=01082271995"
 
+
     // POST https://msafer.or.kr/member/kloginResult.do HTTP/1.1
     // 로그인 통신 -> 카카오톡 요청후 사용자가 인증까지 응답대기 -> timeout을 오래걸어 둔거일듯
     this.header = {};
@@ -106,6 +109,7 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
 
     this.postData = 'pName=' + userName + '&pSsn=' + ssn1 + '&pSsn2=' + ssn2 + '&pPhone=' + userPhone
 
+    console.log("Request Kakao Authentication Waiting...")
     var result = await axios({
         method: 'POST',
         url: this.host + "/member/kloginResult.do",
@@ -114,13 +118,13 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
     })
 
 
-    console.log("로그인 성공");
+    console.log("Success Kakao Authentication");
     const tempCookie = cookieParser(result);
     this.cookies = this.cookies + tempCookie + ";";
     console.log("로그인 이후 쿠키: " + this.cookies);
 
-    console.log("가입사실현황조회서비스");
-    console.log("조회 통신중.. 10초정도 소요..");
+    console.log("가입사실현황조회서비스 시작");
+    console.log("조회 통신중.. 20초정도 소요..");
 
     this.header = {}
     this.header['Host'] = 'msafer.or.kr'
@@ -171,8 +175,6 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
         headers: this.header
     });
 
-    console.log("check.do?")
-
     this.header = {}
     this.header['Host'] = 'msafer.or.kr'
     this.header['Connection'] = 'keep-alive'
@@ -197,10 +199,14 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
     });
 
 
+    console.log("조회 끝 parsing중")
     const scrapResult = {};
 
+    // 마지막 통신 staus로 scraping 결과 판단
     scrapResult["status"] = result.status;
+    console.log("result.data: "+ result.data);
     if(scrapResult["status"] ==200){
+        console.log("가입사실조회서비스 조회 성공")
         // 결과 파싱 코드
         const $ = cheerio.load(result.data);
 
@@ -226,19 +232,20 @@ MSafe.prototype.간편로그인 = async function (userName, userPhone, ssn) {
             } else {
                 json["noJoinList"].push(jsonEl);
             }
-            console.log("통신사: " + company);
-            console.log("가입유무: " + check);
-            console.log("사용자 연락처(nullable): " + userPhone);
-            console.log("통신사 연락처: " + companyPhone);
+            // console.log("통신사: " + company);
+            // console.log("가입유무: " + check);
+            // console.log("사용자 연락처(nullable): " + userPhone);
+            // console.log("통신사 연락처: " + companyPhone);
 
         });
 
         scrapResult["data"] = json;
         console.log(json);
         console.log("가입서비스: " + JSON.stringify(json["joinList"]));
-        console.log("End Check");
+        // console.log("End Check");
 
     }else{
+        console.log("가입조회서비스 조회 실패")
 
         scrapResult["data"] = "UnKnown Error"
     }
