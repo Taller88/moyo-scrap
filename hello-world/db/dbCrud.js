@@ -8,18 +8,16 @@ class DbQuery {
 
     async insert(data){
         console.log("insert init");
-        console.log("data: "+ JSON.stringify(data));
         let statusCode = 200;
         let body;
         try{
             let requestJSON = data;
             console.log("requestJSON: "+ requestJSON.id);
-            await dynamo
-              .put({
+            const result = await dynamo.put({
                 TableName: "moyo-scrap-items",
                 Item: requestJSON
-              })
-              .promise();
+              }).promise();
+            console.log("result: "+result);
             console.log("insert Success")
             body = `Put item ${requestJSON.id}`;
 
