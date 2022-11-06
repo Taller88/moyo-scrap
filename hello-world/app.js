@@ -33,15 +33,16 @@ exports.lambdaHandler = async (event, context) => {
         const userPhone = event.userPhone;
         const userSsn = event.userSsn;
 
-        let scrapResult;
+        
         let response;
         if(jobName == "select"){
             // 데이터 조회
-            const selectData = await dbQuery.select(scrapResult);
+            const selectData = await dbQuery.select(uuid);
             console.log(selectData["status"]);
             console.log(selectData);
             response = selectData;
         }else {
+            let scrapResult;
             // 데이터 스크래핑
             if(moduleName == "lgUplus"){
                 const lgUplus = require("./modules/lguplus");
