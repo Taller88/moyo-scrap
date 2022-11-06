@@ -33,7 +33,26 @@ class DbQuery {
             statusCode,
             body};
     }
-    select(uuid){}
+    async select(uuid){
+      console.log("uuid: "+ uuid+" select init");
+      let body;
+      let statusCode = 200;
+      try{
+        body = await dynamo.scan({ TableName: "moyo-scrap-items" }).promise();
+        console.log("select Success")
+      }catch(err){
+        statusCode = 400;
+        body = err.message;
+
+      }finally{
+
+      }
+
+      return {
+        statusCode,
+        body
+      }
+    }
     delete(){}
     update(){}
 }
