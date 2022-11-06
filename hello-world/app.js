@@ -69,7 +69,7 @@ exports.lambdaHandler = async (event, context) => {
         console.log(scrapResult["id"]);
         
         let dbResult;
-        if(scrapResult['status']==200 && typeof(scrapResult['data'])!='string'){
+        if(scrapResult['status']== 200 && typeof(scrapResult['data'])!='string'){
             console.log("Success Scrapging")
             /**
              * 

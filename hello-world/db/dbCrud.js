@@ -16,13 +16,19 @@ class DbQuery {
             const result = await dynamo.put({
                 TableName: "moyo-scrap-items",
                 Item: requestJSON
-              }).promise();
-            console.log("result: "+result);
-            console.log("insert Success")
+              }).promise().then(function(data) {
+                console.log("put Success")
+                console.log(data);
+              })
+              .catch(function(err) {
+                console.log("put Error")
+                console.log(err);
+              });
             body = `Put item ${requestJSON.id}`;
 
         }catch (err) {
-            console.log("insert Error")
+            console.log("insert Error");
+            console.log(err.message)
             statusCode = 400;
             body = err.message;
         } finally {
