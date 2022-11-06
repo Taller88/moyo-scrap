@@ -1,6 +1,6 @@
 // const axios = require('axios')
 // const url = 'http://checkip.amazonaws.com/';
-const msafeModuel = require("./modules/msafe");
+
 const DbQuery = require("./db/dbCrud");
 const dbQuery = new DbQuery();
 
@@ -23,11 +23,41 @@ exports.lambdaHandler = async (event, context) => {
     try {
         // const ret = await axios(url);
        
+        const moduleName = event.module;
+        const jobName = event.jobName;
+        const userId = event.userId;
+        const userPw = event.userPw;
+        const uuid = event.id;
+
         const urlEncodedName = encodeURIComponent(event.userName);
         const userPhone = event.userPhone;
         const userSsn = event.userSsn;
 
-        let scrapResult = await msafeModuel.prototype.간편로그인(urlEncodedName, userPhone, userSsn);
+        let scrapResult;
+        let response;
+        if(moduleName == "lgUplus"){
+            const lgUplus = require("./modules/lguplus");
+
+            scrapResult = await lgUplus.prototype.로그인(userId, userPw);
+            console.log('scrapResult["status"]: '+ scrapResult["status"])
+            if(scrapResult["status"] ==200){
+                scrapResult = await lgUplus.prototype.통신요금조회();
+                console.log("scrapResult: "+ JSON.stringify(scrapResult));
+
+                if(scrapResult["status"] == 200){
+                    console.log("통신요금조회 성공");
+                    console.log(scrapResult);
+                }
+            }else{
+                console.log("lguplus 로그인 실패");
+                
+
+            }
+
+        }else if(moduleName == "msafe"){
+            const msafeModuel = require("./modules/msafe");
+            scrapResult = await msafeModuel.prototype.간편로그인(urlEncodedName, userPhone, userSsn);
+        }
 
         /*
          scrapResult 
@@ -54,6 +84,8 @@ exports.lambdaHandler = async (event, context) => {
 
 
         response = dbResult
+    
+       
     } catch (err) {
         console.log("app.js Error ")
         console.log(err);

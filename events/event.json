@@ -1,5 +1,9 @@
 {
-  "id":"1995",
+  "module":"lgUplus",
+  "job":"login",
+  "id":"123",
+  "userId":"iod1124@naver.com",
+  "userPw":"Wlsdnwlsdn12",
   "userName":"정진우",
   "userPhone":"01082271995",
   "userSsn":"9306161234567",
