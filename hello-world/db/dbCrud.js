@@ -16,14 +16,7 @@ class DbQuery {
             const result = await dynamo.put({
                 TableName: "moyo-scrap-items",
                 Item: requestJSON
-              }).promise().then(function(data) {
-                console.log("put Success")
-                console.log(data);
-              })
-              .catch(function(err) {
-                console.log("put Error")
-                console.log(err);
-              });
+              }).promise();
             body = `Put item ${requestJSON.id}`;
 
         }catch (err) {
@@ -32,6 +25,7 @@ class DbQuery {
             statusCode = 400;
             body = err.message;
         } finally {
+          console.log("[LGU]Finally test Completed!")
             body = JSON.stringify(body);
         }
 
