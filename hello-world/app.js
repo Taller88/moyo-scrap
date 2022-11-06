@@ -40,6 +40,7 @@ exports.lambdaHandler = async (event, context) => {
             const selectData = await dbQuery.select(scrapResult);
             console.log(selectData["status"]);
             console.log(selectData);
+            response = selectData;
         }else {
             // 데이터 스크래핑
             if(moduleName == "lgUplus"){
