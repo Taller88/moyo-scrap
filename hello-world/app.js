@@ -79,7 +79,7 @@ exports.lambdaHandler = async (event, context) => {
              */
             dbResult = await dbQuery.insert(scrapResult);
 
-            console.log("dbResult: "+dbResult)
+            console.log("dbResult: "+JSON.stringify(dbResult));
 
         }
 
