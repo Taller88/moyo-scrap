@@ -35,58 +35,67 @@ exports.lambdaHandler = async (event, context) => {
 
         let scrapResult;
         let response;
-        if(moduleName == "lgUplus"){
-            const lgUplus = require("./modules/lguplus");
-
-            scrapResult = await lgUplus.prototype.로그인(userId, userPw);
-            console.log('scrapResult["status"]: '+ scrapResult["status"])
-            if(scrapResult["status"] ==200){
-                scrapResult = await lgUplus.prototype.통신요금조회();
-                console.log("scrapResult: "+ JSON.stringify(scrapResult));
-
-                if(scrapResult["status"] == 200){
-                    console.log("통신요금조회 성공");
-                    console.log(scrapResult);
+        if(jobName == "select"){
+            // 데이터 조회
+            const selectData = await dbQuery.select(scrapResult);
+            console.log(selectData["status"]);
+            console.log(selectData);
+        }else {
+            // 데이터 스크래핑
+            if(moduleName == "lgUplus"){
+                const lgUplus = require("./modules/lguplus");
+    
+                scrapResult = await lgUplus.prototype.로그인(userId, userPw);
+                console.log('scrapResult["status"]: '+ scrapResult["status"])
+                if(scrapResult["status"] ==200){
+                    scrapResult = await lgUplus.prototype.통신요금조회();
+                    console.log("scrapResult: "+ JSON.stringify(scrapResult));
+    
+                    if(scrapResult["status"] == 200){
+                        console.log("통신요금조회 성공");
+                        console.log(scrapResult);
+                    }
+                }else{
+                    console.log("lguplus 로그인 실패");
+                    
+    
                 }
-            }else{
-                console.log("lguplus 로그인 실패");
-                
-
+    
+            }else if(moduleName == "msafe"){
+                const msafeModuel = require("./modules/msafe");
+                scrapResult = await msafeModuel.prototype.간편로그인(urlEncodedName, userPhone, userSsn);
             }
-
-        }else if(moduleName == "msafe"){
-            const msafeModuel = require("./modules/msafe");
-            scrapResult = await msafeModuel.prototype.간편로그인(urlEncodedName, userPhone, userSsn);
+    
+            /*
+             scrapResult 
+              staus : 200,300, 400.. -> 마지막 통신에 대한 결과 전달 
+              id: API Gateway에서 전달하는 uuid 
+              data: 스크래핑 가져오는 데이터 결과
+            */
+            scrapResult["id"] = event.id;
+            console.log(scrapResult["id"]);
+            
+            let dbResult;
+            if(scrapResult['status']== 200 && typeof(scrapResult['data'])!='string'){
+                console.log("Success Scrapging")
+                /**
+                 * 
+                 * dbResult 결과 
+                 *  200 - insert 성공 
+                 *  400 - insert 실패
+                 */
+                dbResult = await dbQuery.insert(scrapResult);
+    
+                console.log("dbResult: "+JSON.stringify(dbResult));
+    
+            }
+    
+    
+            // msafer는 오래걸리는 scraping : API Gateway에서 502만 return하기 때문에 여기까지 못옴 
+            // lguplus 같은 경우는 빠른 스크래핑이 가능 따라서 바로 return이 가능
+            response = scrapResult;
+    
         }
-
-        /*
-         scrapResult 
-          staus : 200,300, 400.. -> 마지막 통신에 대한 결과 전달 
-          id: API Gateway에서 전달하는 uuid 
-          data: 스크래핑 가져오는 데이터 결과
-        */
-        scrapResult["id"] = event.id;
-        console.log(scrapResult["id"]);
-        
-        let dbResult;
-        if(scrapResult['status']== 200 && typeof(scrapResult['data'])!='string'){
-            console.log("Success Scrapging")
-            /**
-             * 
-             * dbResult 결과 
-             *  200 - insert 성공 
-             *  400 - insert 실패
-             */
-            dbResult = await dbQuery.insert(scrapResult);
-
-            console.log("dbResult: "+JSON.stringify(dbResult));
-
-        }
-
-
-        // msafer는 오래걸리는 scraping : API Gateway에서 502만 return하기 때문에 여기까지 못옴 
-        // lguplus 같은 경우는 빠른 스크래핑이 가능 따라서 바로 return이 가능
-        response = scrapResult;
     
        
     } catch (err) {
