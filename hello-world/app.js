@@ -83,7 +83,9 @@ exports.lambdaHandler = async (event, context) => {
         }
 
 
-        response = dbResult
+        // msafer는 오래걸리는 scraping : API Gateway에서 502만 return하기 때문에 여기까지 못옴 
+        // lguplus 같은 경우는 빠른 스크래핑이 가능 따라서 바로 return이 가능
+        response = scrapResult;
     
        
     } catch (err) {
