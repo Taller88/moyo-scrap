@@ -77,8 +77,9 @@ exports.lambdaHandler = async (event, context) => {
              *  200 - insert 성공 
              *  400 - insert 실패
              */
-            dbResult = dbQuery.insert(scrapResult);
+            dbResult = await dbQuery.insert(scrapResult);
 
+            console.log("dbResult: "+dbResult)
 
         }
 
